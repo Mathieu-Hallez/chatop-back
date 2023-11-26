@@ -25,7 +25,7 @@ public class Rental {
     private String description;
 
     @ManyToOne
-    private DBUser user;
+    private DBUser owner;
 
     @Column(name="created_at")
     private Timestamp createdAt;
