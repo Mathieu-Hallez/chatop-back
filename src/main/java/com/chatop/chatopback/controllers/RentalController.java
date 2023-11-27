@@ -1,39 +1,51 @@
 package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.Rental;
+import com.chatop.chatopback.payload.RentalDto;
 import com.chatop.chatopback.service.RentalService;
+import io.swagger.v3.oas.annotations.Operation;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/rentals")
 public class RentalController {
 
     @Autowired
     private RentalService rentalService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     /**
      * Read - Get one rental
      * @param id - The id of the rental
      * @return - A Rental object fulfilled
      */
-    @GetMapping("/rentals/{id}")
-    public Rental getRental(@PathVariable("id") final Long id) {
+    @GetMapping("/{id}")
+    public RentalDto getRental(@PathVariable("id") final Long id) {
         Optional<Rental> rental = this.rentalService.getRental(id);
         if(rental.isEmpty()) return null;
-        return rental.get();
+        return modelMapper.map(rental.get(), RentalDto.class);
     }
 
     /**
      * Read - Get all rentals
-     * @return - A iterable object of Rental fulfilled
+     * @return - A list object of Rentals fulfilled
      */
-    @GetMapping("/rentals")
-    public Iterable<Rental> getRentals() {
-        return this.rentalService.getRentals();
+    @Operation(summary = "Get all rentals")
+    @GetMapping("/")
+    public List<RentalDto> getRentals() {
+        List<RentalDto> listRentals = new ArrayList<>();
+        Iterable<Rental> rentals = this.rentalService.getRentals();
+        rentals.forEach(rental -> listRentals.add(modelMapper.map(rental, RentalDto.class)));
+        return listRentals;
     }
 
     /**
@@ -42,8 +54,8 @@ public class RentalController {
      * @param rental - New Rental data
      * @return - A Rental object fulfilled
      */
-    @PutMapping("/rentals/{id}")
-    public Rental updateRental(@PathVariable("id") final Long id, @RequestBody Rental rental) {
+    @PutMapping("/{id}")
+    public RentalDto updateRental(@PathVariable("id") final Long id, @RequestBody RentalDto rental) {
         Optional<Rental> r = this.rentalService.getRental(id);
         if(r.isEmpty()) return null;
 
@@ -67,6 +79,6 @@ public class RentalController {
         currentRental.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         this.rentalService.saveRental(currentRental);
-        return currentRental;
+        return modelMapper.map(currentRental, RentalDto.class);
     }
 }
