@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends CrudRepository<DBUser, Long> {
-    @Query("SELECT u FROM DBUser u WHERE u.email= :email")
+//    @Query("SELECT u FROM DBUser u WHERE u.email= :email")
     Optional<DBUser> findUserByEmail(
             @Param("email") String email
     );

@@ -5,6 +5,7 @@ import com.chatop.chatopback.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,14 +22,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<DBUser> optionalUser = userRepository.findUserByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<DBUser> optionalUser = userRepository.findUserByEmail(email);
         if(optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("No user with email " + username + " find.");
+            throw new UsernameNotFoundException("No user with email " + email + " find.");
         }
-        DBUser user = optionalUser.get();
+        DBUser dbUser = optionalUser.get();
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), getGrantedAuthorities("USER"));
+        User user = new User(dbUser.getEmail(), dbUser.getPassword(), getGrantedAuthorities("USER"));
+
+        return user;
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(String role) {
