@@ -67,4 +67,4 @@ Our code squad : Mathieu HALLEZ
 
 ## Licensing
 
-This project was built under the Creative Commons licence.
+This project was built under the MIT licence.
