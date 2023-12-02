@@ -4,7 +4,7 @@
 ![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
 
-# ChâTop : Portail de mise en relation
+# ChâTop : Connection portal
 
 We are creating a portal to connect future tenants and owners for seasonal rentals on the Basque coast initially and,
 later, throughout France.
