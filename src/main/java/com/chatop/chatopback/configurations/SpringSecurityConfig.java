@@ -50,7 +50,7 @@ public class SpringSecurityConfig {
 
 
 
-    public static final String[] PUBLIC_PATHS = {"/auth/**",
+    public static final String[] PUBLIC_PATHS = {"/api/auth/**",
             "/api-docs.yaml",
             "/api-docs/**",
             "/api-docs",
@@ -65,7 +65,6 @@ public class SpringSecurityConfig {
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(
                         auth -> {
-                            auth.requestMatchers("/auth/login").permitAll();
                             auth.requestMatchers(PUBLIC_PATHS).permitAll();
                             auth.anyRequest().authenticated();
                         }

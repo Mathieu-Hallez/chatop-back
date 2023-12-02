@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/rentals")
+@RequestMapping("/api/rentals")
 public class RentalController {
 
     @Autowired
@@ -42,7 +42,7 @@ public class RentalController {
      * @return - A list object of Rentals fulfilled
      */
     @Operation(summary = "Get all rentals")
-    @GetMapping("/")
+    @GetMapping("")
     public List<RentalDto> getRentals() {
         List<RentalDto> listRentals = new ArrayList<>();
         Iterable<Rental> rentals = this.rentalService.getRentals();
