@@ -6,6 +6,8 @@ import com.chatop.chatopback.service.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/rentals")
+@RequestMapping("/api/rentals")
 public class RentalController {
 
     @Autowired
@@ -29,10 +31,10 @@ public class RentalController {
      * @return - A Rental object fulfilled
      */
     @GetMapping("/{id}")
-    public RentalDto getRental(@PathVariable("id") final Long id) {
+    public ResponseEntity<RentalDto> getRental(@PathVariable("id") final Long id) {
         Optional<Rental> rental = this.rentalService.getRental(id);
         if(rental.isEmpty()) return null;
-        return modelMapper.map(rental.get(), RentalDto.class);
+        return new ResponseEntity<>(modelMapper.map(rental.get(), RentalDto.class), HttpStatus.FOUND);
     }
 
     /**
@@ -40,7 +42,7 @@ public class RentalController {
      * @return - A list object of Rentals fulfilled
      */
     @Operation(summary = "Get all rentals")
-    @GetMapping("/")
+    @GetMapping("")
     public List<RentalDto> getRentals() {
         List<RentalDto> listRentals = new ArrayList<>();
         Iterable<Rental> rentals = this.rentalService.getRentals();
@@ -55,7 +57,7 @@ public class RentalController {
      * @return - A Rental object fulfilled
      */
     @PutMapping("/{id}")
-    public RentalDto updateRental(@PathVariable("id") final Long id, @RequestBody RentalDto rental) {
+    public ResponseEntity<RentalDto> updateRental(@PathVariable("id") final Long id, @RequestBody RentalDto rental) {
         Optional<Rental> r = this.rentalService.getRental(id);
         if(r.isEmpty()) return null;
 
@@ -79,6 +81,6 @@ public class RentalController {
         currentRental.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         this.rentalService.saveRental(currentRental);
-        return modelMapper.map(currentRental, RentalDto.class);
+        return new ResponseEntity<>(modelMapper.map(currentRental, RentalDto.class), HttpStatus.CREATED);
     }
 }
