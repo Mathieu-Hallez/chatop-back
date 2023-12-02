@@ -17,4 +17,8 @@ public class UserService {
     public Optional<DBUser> getUser(String email) {
         return this.userRepository.findUserByEmail(email);
     }
+
+    public DBUser saveUser(DBUser user) {
+        return this.userRepository.save(user);
+    }
 }
