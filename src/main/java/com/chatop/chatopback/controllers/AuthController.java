@@ -66,11 +66,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
-        Optional<DBUser> userOptional = this.userService.getUser(userRegister.getEmail());
-        if(userOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
         DBUser dbUser = new DBUser();
         dbUser.setEmail(userRegister.getEmail());
         dbUser.setName(userRegister.getName());
@@ -78,8 +73,13 @@ public class AuthController {
         dbUser.setCreatedAt(Timestamp.from(Instant.now()));
         dbUser.setUpdatedAt(Timestamp.from(Instant.now()));
 
-        DBUser dbUserSaved = userService.saveUser(dbUser);
+        Optional<DBUser> optionalDBUserSaved = userService.registerUser(dbUser);
+        if(optionalDBUserSaved.isEmpty()) {
+            log.info("User register failed. User email already used." + dbUser.getEmail());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
+        DBUser dbUserSaved = optionalDBUserSaved.get();
         log.info("User Saved: " + dbUserSaved.getEmail() + " with id: " + dbUserSaved.getId());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dbUserSaved.getEmail(), userRegister.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
