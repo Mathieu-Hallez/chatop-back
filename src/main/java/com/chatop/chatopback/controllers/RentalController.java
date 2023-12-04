@@ -1,86 +1,152 @@
 package com.chatop.chatopback.controllers;
 
+import com.chatop.chatopback.model.DBUser;
 import com.chatop.chatopback.model.Rental;
-import com.chatop.chatopback.payload.RentalDto;
-import com.chatop.chatopback.service.RentalService;
+import com.chatop.chatopback.payload.rental.CreateRentalDto;
+import com.chatop.chatopback.payload.rental.RentalDto;
+import com.chatop.chatopback.payload.rental.RentalsListDto;
+import com.chatop.chatopback.payload.rental.UpdateRentalDto;
+import com.chatop.chatopback.services.RentalService;
+import com.chatop.chatopback.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rentals")
+@Tag(name = "Rental", description = "The Rental API. Contains all the operations that can be performed on a rental.")
 public class RentalController {
 
     @Autowired
     private RentalService rentalService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private ModelMapper modelMapper;
 
     /**
-     * Read - Get one rental
-     * @param id - The id of the rental
-     * @return - A Rental object fulfilled
+     * Read - Get one rental.
+     * @param id - The id of the rental.
+     * @return - A Rental object fulfilled.
      */
+    @Operation(
+            summary = "Get a rental.",
+            description="Get a rental",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "A rental.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
+                    @ApiResponse(responseCode = "404", description = "Rental not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<RentalDto> getRental(@PathVariable("id") final Long id) {
         Optional<Rental> rental = this.rentalService.getRental(id);
-        if(rental.isEmpty()) return null;
-        return new ResponseEntity<>(modelMapper.map(rental.get(), RentalDto.class), HttpStatus.FOUND);
+        if(rental.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);;
+        return new ResponseEntity<>(modelMapper.map(rental.get(), RentalDto.class), HttpStatus.OK);
     }
 
     /**
-     * Read - Get all rentals
-     * @return - A list object of Rentals fulfilled
+     * Read - Get all rentals.
+     * @return - A list object of Rentals fulfilled.
      */
-    @Operation(summary = "Get all rentals")
+    @Operation(
+            summary = "Get all rentals.",
+            description = "Get all rentals.",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "A list of rental.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalsListDto.class)) }),
+                @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())})
+            }
+    )
     @GetMapping("")
-    public List<RentalDto> getRentals() {
+    public ResponseEntity<RentalsListDto> getRentals() {
         List<RentalDto> listRentals = new ArrayList<>();
         Iterable<Rental> rentals = this.rentalService.getRentals();
         rentals.forEach(rental -> listRentals.add(modelMapper.map(rental, RentalDto.class)));
-        return listRentals;
+        return new ResponseEntity<RentalsListDto>(new RentalsListDto(listRentals),HttpStatus.OK);
     }
 
     /**
-     * Update - Edit a Rental
-     * @param id - The id of the Rental to edit
-     * @param rental - New Rental data
-     * @return - A Rental object fulfilled
+     * Update - Edit a Rental.
+     * @param id - The id of the Rental to edit.
+     * @param rental - New Rental data.
+     * @return - A Rental object fulfilled.
      */
+    @Operation(
+            summary = "Update a rental.",
+            description="Update a rental",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "The rental updated.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
+                    @ApiResponse(responseCode = "404", description = "Rental to update not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
+            }
+    )
     @PutMapping("/{id}")
-    public ResponseEntity<RentalDto> updateRental(@PathVariable("id") final Long id, @RequestBody RentalDto rental) {
+    public ResponseEntity<RentalDto> updateRental(@PathVariable("id") final Long id, @RequestBody UpdateRentalDto rental) {
         Optional<Rental> r = this.rentalService.getRental(id);
-        if(r.isEmpty()) return null;
+        if(r.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
         Rental currentRental = r.get();
-        String name = rental.getName();
-        if(name != null) {
-            currentRental.setName(name);
-        }
-        BigDecimal surface = rental.getSurface();
-        if(surface != null )
-            currentRental.setSurface(surface);
-        BigDecimal price = rental.getPrice();
-        if(price != null)
-            currentRental.setPrice(price);
-        String picture = rental.getPicture();
-        if(picture != null)
-            currentRental.setPicture(picture);
-        String description = rental.getDescription();
-        if( description != null)
-            currentRental.setDescription(description);
+        if(rental.getName() != null)
+            currentRental.setName(rental.getName());
+        if(rental.getSurface() != null )
+            currentRental.setSurface(rental.getSurface());
+        if(rental.getPrice() != null)
+            currentRental.setPrice(rental.getPrice());
+        if( rental.getDescription() != null)
+            currentRental.setDescription(rental.getDescription());
         currentRental.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         this.rentalService.saveRental(currentRental);
-        return new ResponseEntity<>(modelMapper.map(currentRental, RentalDto.class), HttpStatus.CREATED);
+        return new ResponseEntity<>(modelMapper.map(currentRental, RentalDto.class), HttpStatus.OK);
+    }
+
+    /**
+     * Create - Create a new rental.
+     * @param rentalDto - The rental to populate.
+     * @return - A ApiResponse with a message.
+     */
+    @Operation(
+            summary = "Create a new rental.",
+            description="Update a rental",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "The rental create.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())})
+            }
+    )
+    @PostMapping("")
+    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> createRental(Authentication authentication, @RequestBody final CreateRentalDto rentalDto) {
+        com.chatop.chatopback.payload.api.ApiResponse apiResponse = new com.chatop.chatopback.payload.api.ApiResponse("Rental created!");
+        try {
+            Rental rental = modelMapper.map(rentalDto, Rental.class);
+            Timestamp now = Timestamp.from(Instant.now());
+            rental.setCreatedAt(now);
+            rental.setUpdatedAt(now);
+
+            Optional<DBUser> dbUser = this.userService.getUser(authentication.getName());
+            if(dbUser.isEmpty()) {
+                apiResponse.setMessage("Not authenticate.");
+                return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+            }
+            rental.setOwner(dbUser.get());
+
+            this.rentalService.saveRental(rental);
+        } catch(Exception ex) {
+            apiResponse.setMessage(ex.getMessage());
+        }
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

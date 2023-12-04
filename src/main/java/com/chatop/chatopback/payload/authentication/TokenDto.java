@@ -3,9 +3,9 @@ package com.chatop.chatopback.payload.authentication;
 import lombok.Data;
 
 @Data
-public class AuthResponseDto {
+public class TokenDto {
     private String token;
-    public AuthResponseDto(String token) {
+    public TokenDto(String token) {
         this.token = token;
     }
 }

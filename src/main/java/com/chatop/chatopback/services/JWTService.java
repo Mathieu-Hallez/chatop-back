@@ -1,4 +1,4 @@
-package com.chatop.chatopback.service;
+package com.chatop.chatopback.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

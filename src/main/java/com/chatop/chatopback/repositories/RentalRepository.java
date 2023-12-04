@@ -1,4 +1,4 @@
-package com.chatop.chatopback.repository;
+package com.chatop.chatopback.repositories;
 
 import com.chatop.chatopback.model.Rental;
 import org.springframework.data.repository.CrudRepository;

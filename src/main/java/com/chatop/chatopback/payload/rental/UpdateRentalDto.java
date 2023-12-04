@@ -1,14 +1,13 @@
-package com.chatop.chatopback.payload;
+package com.chatop.chatopback.payload.rental;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class RentalDto {
+public class UpdateRentalDto {
     private String name;
-    private BigDecimal surface;
     private BigDecimal price;
-    private String picture;
+    private BigDecimal surface;
     private String description;
 }

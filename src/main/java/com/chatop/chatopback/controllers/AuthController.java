@@ -1,13 +1,15 @@
 package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.DBUser;
-import com.chatop.chatopback.payload.authentication.AuthResponseDto;
+import com.chatop.chatopback.payload.authentication.TokenDto;
 import com.chatop.chatopback.payload.authentication.LoginRequestDto;
 import com.chatop.chatopback.payload.authentication.RegisterRequestDto;
 import com.chatop.chatopback.payload.authentication.UserDto;
-import com.chatop.chatopback.service.JWTService;
+import com.chatop.chatopback.payload.api.ApiResponse;
+import com.chatop.chatopback.services.JWTService;
 import com.chatop.chatopback.services.UserService;
-import org.apache.coyote.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +31,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "The Authentication API. Contains all the operations that can be performed for authentication.")
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -52,20 +56,30 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    @SecurityRequirements()
+    public ResponseEntity<?> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
+        Optional<DBUser> optionalDbUser = this.userService.getUser(userLogin.getLogin());
+        if(optionalDbUser.isEmpty()) {
+            return new ResponseEntity<>(new ApiResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
+        }
 
-        User user = (User) authentication.getPrincipal();
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = (User) authentication.getPrincipal();
 
-        log.info("Token requested for user :{}", authentication.getAuthorities());
-        String token = jwtService.generateToken(authentication);
+            log.info("Token requested for user :{}", authentication.getAuthorities());
+            String token = jwtService.generateToken(authentication);
 
-        return ResponseEntity.ok(new AuthResponseDto(token));
+            return ResponseEntity.ok(new TokenDto(token));
+        }catch(BadCredentialsException ex) {
+            return new ResponseEntity<>(new ApiResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
+    @SecurityRequirements()
+    public ResponseEntity<TokenDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
         DBUser dbUser = new DBUser();
         dbUser.setEmail(userRegister.getEmail());
         dbUser.setName(userRegister.getName());
@@ -76,7 +90,7 @@ public class AuthController {
         Optional<DBUser> optionalDBUserSaved = userService.registerUser(dbUser);
         if(optionalDBUserSaved.isEmpty()) {
             log.info("User register failed. User email already used." + dbUser.getEmail());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         DBUser dbUserSaved = optionalDBUserSaved.get();
@@ -85,6 +99,6 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(authentication);
 
-        return new ResponseEntity<AuthResponseDto>(new AuthResponseDto(token), HttpStatus.CREATED);
+        return new ResponseEntity<TokenDto>(new TokenDto(token), HttpStatus.CREATED);
     }
 }

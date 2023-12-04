@@ -29,9 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         DBUser dbUser = optionalUser.get();
 
-        User user = new User(dbUser.getEmail(), dbUser.getPassword(), getGrantedAuthorities("USER"));
-
-        return user;
+        return new User(dbUser.getEmail(), dbUser.getPassword(), getGrantedAuthorities("USER"));
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(String role) {
