@@ -57,10 +57,11 @@ public class AuthController {
         if(optionalDbUser.isEmpty()) {
             return new ResponseEntity<>(new ApiErrorResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
         }
-        DBUser dbUser = optionalDbUser.get();
-        if(!dbUser.getPassword().equals(passwordEncoder.encode(userLogin.getPassword()))) {
-            return new ResponseEntity<>(new ApiErrorResponse("Invalid password."), HttpStatus.UNAUTHORIZED);
-        }
+//        DBUser dbUser = optionalDbUser.get();
+//        System.out.println("Password compare: " + dbUser.getPassword() + " == " + passwordEncoder.encode(userLogin.getPassword()));
+//        if(!dbUser.getPassword().equals(passwordEncoder.encode(userLogin.getPassword()))) {
+//            return new ResponseEntity<>(new ApiErrorResponse("Invalid password."), HttpStatus.UNAUTHORIZED);
+//        }
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
