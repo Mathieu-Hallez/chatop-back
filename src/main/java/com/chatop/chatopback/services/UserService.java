@@ -20,6 +20,10 @@ public class UserService {
         return this.userRepository.findUserByEmail(email);
     }
 
+    public Optional<DBUser> getUser(Long id) {
+        return this.userRepository.findById(id);
+    }
+
     /**
      * Register a new user if the email is not used.
      * @param user DBUser

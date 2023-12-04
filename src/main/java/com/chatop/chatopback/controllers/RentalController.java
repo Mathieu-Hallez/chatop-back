@@ -122,7 +122,7 @@ public class RentalController {
             summary = "Create a new rental.",
             description="Update a rental",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "The rental create.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
+                    @ApiResponse(responseCode = "201", description = "The rental create.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = com.chatop.chatopback.payload.api.ApiResponse.class)) }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
     )

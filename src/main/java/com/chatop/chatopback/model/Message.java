@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -23,4 +24,12 @@ public class Message {
 
     @Column(name="updated_at")
     private Timestamp updatedAt;
+
+    public Message(String message, Rental rental, DBUser dbUser) {
+        this.rental = rental;
+        this.user = dbUser;
+        this.message = message;
+        this.createdAt = Timestamp.from(Instant.now());
+        this.updatedAt = Timestamp.from(Instant.now());
+    }
 }
