@@ -5,9 +5,9 @@ import com.chatop.chatopback.payload.authentication.AuthResponseDto;
 import com.chatop.chatopback.payload.authentication.LoginRequestDto;
 import com.chatop.chatopback.payload.authentication.RegisterRequestDto;
 import com.chatop.chatopback.payload.authentication.UserDto;
-import com.chatop.chatopback.service.JWTService;
+import com.chatop.chatopback.payload.error.ApiErrorResponse;
+import com.chatop.chatopback.services.JWTService;
 import com.chatop.chatopback.services.UserService;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
+    public ResponseEntity<?> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
+        Optional<DBUser> optionalDbUser = this.userService.getUser(userLogin.getLogin());
+        if(optionalDbUser.isEmpty()) {
+            return new ResponseEntity<>(new ApiErrorResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
+        }
+        DBUser dbUser = optionalDbUser.get();
+        if(!dbUser.getPassword().equals(passwordEncoder.encode(userLogin.getPassword()))) {
+            return new ResponseEntity<>(new ApiErrorResponse("Invalid password."), HttpStatus.UNAUTHORIZED);
+        }
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -76,7 +85,7 @@ public class AuthController {
         Optional<DBUser> optionalDBUserSaved = userService.registerUser(dbUser);
         if(optionalDBUserSaved.isEmpty()) {
             log.info("User register failed. User email already used." + dbUser.getEmail());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         DBUser dbUserSaved = optionalDBUserSaved.get();
