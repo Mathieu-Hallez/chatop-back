@@ -1,13 +1,15 @@
 package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.DBUser;
-import com.chatop.chatopback.payload.authentication.AuthResponseDto;
+import com.chatop.chatopback.payload.authentication.TokenDto;
 import com.chatop.chatopback.payload.authentication.LoginRequestDto;
 import com.chatop.chatopback.payload.authentication.RegisterRequestDto;
 import com.chatop.chatopback.payload.authentication.UserDto;
-import com.chatop.chatopback.payload.error.ApiErrorResponse;
+import com.chatop.chatopback.payload.api.ApiResponse;
 import com.chatop.chatopback.services.JWTService;
 import com.chatop.chatopback.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "The Authentication API. Contains all the operations that can be performed for authentication.")
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -53,10 +56,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @SecurityRequirements()
     public ResponseEntity<?> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
         Optional<DBUser> optionalDbUser = this.userService.getUser(userLogin.getLogin());
         if(optionalDbUser.isEmpty()) {
-            return new ResponseEntity<>(new ApiErrorResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ApiResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
         }
 
         try {
@@ -67,14 +71,15 @@ public class AuthController {
             log.info("Token requested for user :{}", authentication.getAuthorities());
             String token = jwtService.generateToken(authentication);
 
-            return ResponseEntity.ok(new AuthResponseDto(token));
+            return ResponseEntity.ok(new TokenDto(token));
         }catch(BadCredentialsException ex) {
-            return new ResponseEntity<>(new ApiErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ApiResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
+    @SecurityRequirements()
+    public ResponseEntity<TokenDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
         DBUser dbUser = new DBUser();
         dbUser.setEmail(userRegister.getEmail());
         dbUser.setName(userRegister.getName());
@@ -94,6 +99,6 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(authentication);
 
-        return new ResponseEntity<AuthResponseDto>(new AuthResponseDto(token), HttpStatus.CREATED);
+        return new ResponseEntity<TokenDto>(new TokenDto(token), HttpStatus.CREATED);
     }
 }
