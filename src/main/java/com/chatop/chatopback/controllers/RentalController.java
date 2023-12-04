@@ -88,15 +88,20 @@ public class RentalController {
             summary = "Update a rental.",
             description="Update a rental",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "The rental updated.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
+                    @ApiResponse(responseCode = "200", description = "The rental updated.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class)) }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
                     @ApiResponse(responseCode = "404", description = "Rental to update not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<RentalDto> updateRental(@PathVariable("id") final Long id, @RequestBody UpdateRentalDto rental) {
+    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> updateRental(@PathVariable("id") final Long id, @RequestBody UpdateRentalDto rental) {
+        com.chatop.chatopback.payload.api.ApiResponse apiResponse = new com.chatop.chatopback.payload.api.ApiResponse("Rental Updated !");
+
         Optional<Rental> r = this.rentalService.getRental(id);
-        if(r.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if(r.isEmpty()) {
+            apiResponse.setMessage("Rental with id " + id + " doesn't find.");
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        }
 
         Rental currentRental = r.get();
         if(rental.getName() != null)
@@ -110,7 +115,7 @@ public class RentalController {
         currentRental.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
         this.rentalService.saveRental(currentRental);
-        return new ResponseEntity<>(modelMapper.map(currentRental, RentalDto.class), HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     /**
