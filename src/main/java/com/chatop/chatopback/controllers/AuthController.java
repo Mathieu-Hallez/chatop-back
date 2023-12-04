@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,21 +58,19 @@ public class AuthController {
         if(optionalDbUser.isEmpty()) {
             return new ResponseEntity<>(new ApiErrorResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
         }
-//        DBUser dbUser = optionalDbUser.get();
-//        System.out.println("Password compare: " + dbUser.getPassword() + " == " + passwordEncoder.encode(userLogin.getPassword()));
-//        if(!dbUser.getPassword().equals(passwordEncoder.encode(userLogin.getPassword()))) {
-//            return new ResponseEntity<>(new ApiErrorResponse("Invalid password."), HttpStatus.UNAUTHORIZED);
-//        }
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = (User) authentication.getPrincipal();
 
-        User user = (User) authentication.getPrincipal();
+            log.info("Token requested for user :{}", authentication.getAuthorities());
+            String token = jwtService.generateToken(authentication);
 
-        log.info("Token requested for user :{}", authentication.getAuthorities());
-        String token = jwtService.generateToken(authentication);
-
-        return ResponseEntity.ok(new AuthResponseDto(token));
+            return ResponseEntity.ok(new AuthResponseDto(token));
+        }catch(BadCredentialsException ex) {
+            return new ResponseEntity<>(new ApiErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PostMapping("/register")
