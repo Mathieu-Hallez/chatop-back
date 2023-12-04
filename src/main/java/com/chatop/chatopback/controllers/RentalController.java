@@ -2,7 +2,6 @@ package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.DBUser;
 import com.chatop.chatopback.model.Rental;
-import com.chatop.chatopback.payload.authentication.TokenDto;
 import com.chatop.chatopback.payload.rental.CreateRentalDto;
 import com.chatop.chatopback.payload.rental.RentalDto;
 import com.chatop.chatopback.payload.rental.RentalsListDto;
@@ -20,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
