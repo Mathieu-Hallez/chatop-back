@@ -2,7 +2,7 @@ package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.Rental;
 import com.chatop.chatopback.payload.RentalDto;
-import com.chatop.chatopback.service.RentalService;
+import com.chatop.chatopback.services.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

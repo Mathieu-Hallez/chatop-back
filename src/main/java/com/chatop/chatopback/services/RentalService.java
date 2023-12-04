@@ -1,8 +1,7 @@
-package com.chatop.chatopback.service;
+package com.chatop.chatopback.services;
 
 import com.chatop.chatopback.model.Rental;
-import com.chatop.chatopback.repository.RentalRepository;
-import lombok.Data;
+import com.chatop.chatopback.repositories.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
