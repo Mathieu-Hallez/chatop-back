@@ -5,7 +5,6 @@ import com.chatop.chatopback.model.Message;
 import com.chatop.chatopback.model.Rental;
 import com.chatop.chatopback.payload.api.ApiResponse;
 import com.chatop.chatopback.payload.message.MessageRequestDto;
-import com.chatop.chatopback.payload.rental.RentalDto;
 import com.chatop.chatopback.services.MessageService;
 import com.chatop.chatopback.services.RentalService;
 import com.chatop.chatopback.services.UserService;

@@ -2,16 +2,13 @@ package com.chatop.chatopback.controllers;
 
 import com.chatop.chatopback.model.DBUser;
 import com.chatop.chatopback.payload.authentication.UserDto;
-import com.chatop.chatopback.payload.rental.RentalDto;
 import com.chatop.chatopback.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.websocket.server.PathParam;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

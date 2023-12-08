@@ -44,7 +44,7 @@ public class RentalController {
      */
     @Operation(
             summary = "Get a rental.",
-            description="Get a rental",
+            description="Get a rental by its identifier",
             responses = {
                     @ApiResponse(responseCode = "200", description = "A rental.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RentalDto.class)) }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
@@ -86,9 +86,9 @@ public class RentalController {
      */
     @Operation(
             summary = "Update a rental.",
-            description="Update a rental",
+            description="Update a rental by passing is identifier in the URI.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "The rental updated.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class)) }),
+                    @ApiResponse(responseCode = "200", description = "A message that indicate the success of update.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = com.chatop.chatopback.payload.api.ApiResponse.class)) }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
                     @ApiResponse(responseCode = "404", description = "Rental to update not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
@@ -125,9 +125,9 @@ public class RentalController {
      */
     @Operation(
             summary = "Create a new rental.",
-            description="Update a rental",
+            description="Create a new rental",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "The rental create.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = com.chatop.chatopback.payload.api.ApiResponse.class)) }),
+                    @ApiResponse(responseCode = "201", description = "A message that indicate the success of creation.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = com.chatop.chatopback.payload.api.ApiResponse.class)) }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
     )
