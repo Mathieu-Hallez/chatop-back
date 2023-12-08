@@ -54,7 +54,7 @@ public class RentalController {
     @GetMapping("/{id}")
     public ResponseEntity<RentalDto> getRental(@PathVariable("id") final Long id) {
         Optional<Rental> rental = this.rentalService.getRental(id);
-        if(rental.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);;
+        if(rental.isEmpty()) {return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
         return new ResponseEntity<>(modelMapper.map(rental.get(), RentalDto.class), HttpStatus.OK);
     }
 
