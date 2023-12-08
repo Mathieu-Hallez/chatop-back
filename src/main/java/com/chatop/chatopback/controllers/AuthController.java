@@ -8,6 +8,9 @@ import com.chatop.chatopback.payload.authentication.UserDto;
 import com.chatop.chatopback.payload.api.ApiResponse;
 import com.chatop.chatopback.services.JWTService;
 import com.chatop.chatopback.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
@@ -47,6 +50,20 @@ public class AuthController {
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * GET - Get current user login
+     * @param authentication The current authentication object
+     * @return The user
+     */
+    @Operation(
+            summary = "Get current user login.",
+            description="Get current user login.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "The current user.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)) }),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())}),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Rental to update not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
+            }
+    )
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser(Authentication authentication) {
         Optional<DBUser> dbUser = this.userService.getUser(authentication.getName());
@@ -55,6 +72,20 @@ public class AuthController {
         return new ResponseEntity<>(modelMapper.map(dbUser.get(), UserDto.class), HttpStatus.FOUND);
     }
 
+    /**
+     * POST - Login to the API.
+     * @param userLogin Identification information.
+     * @return A new valid token.
+     * @throws IllegalAccessException
+     */
+    @Operation(
+            summary = "Login to the API.",
+            description="Login to the API and get a valid token.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "The current user login.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))}),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "An error message.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class))})
+            }
+    )
     @PostMapping("/login")
     @SecurityRequirements()
     public ResponseEntity<?> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
@@ -77,6 +108,20 @@ public class AuthController {
         }
     }
 
+    /**
+     * POST - Register to the API and login to receive a valid token.
+     * @param userRegister Register information.
+     * @return A new valid token.
+     * @throws IllegalAccessException
+     */
+    @Operation(
+            summary = "Register to the API.",
+            description="Register to the API and get a valid token.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "The current user login.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = TokenDto.class))}),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "An error message.", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class))})
+            }
+    )
     @PostMapping("/register")
     @SecurityRequirements()
     public ResponseEntity<TokenDto> register(@RequestBody RegisterRequestDto userRegister) throws IllegalAccessException {
