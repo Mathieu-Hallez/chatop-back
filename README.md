@@ -22,7 +22,7 @@ later, throughout France.
 ---
 ## Quick Start
 
-To launch the project, you have need of MySQL installed and [configured](#MySQL Database) on your computer.
+To launch the project, you have need of MySQL installed and [configured](#mysql-database) on your computer.
 Start MySQL service on your computer. If you need it you can configure MySQL access of the project in application.properties.
 
 ### Build Spring Boot Project with Maven
