@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -94,7 +95,7 @@ public class RentalController {
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> updateRental(@PathVariable("id") final Long id, @RequestBody UpdateRentalDto rental) {
+    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> updateRental(@PathVariable("id") final Long id, @ModelAttribute UpdateRentalDto rental) {
         com.chatop.chatopback.payload.api.ApiResponse apiResponse = new com.chatop.chatopback.payload.api.ApiResponse("Rental Updated !");
 
         Optional<Rental> r = this.rentalService.getRental(id);
@@ -131,12 +132,13 @@ public class RentalController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized request.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
     )
-    @PostMapping("")
-    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> createRental(Authentication authentication, @RequestBody final CreateRentalDto rentalDto) {
+    @PostMapping(value="", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<com.chatop.chatopback.payload.api.ApiResponse> createRental(Authentication authentication, @ModelAttribute final CreateRentalDto rentalDto) {
         com.chatop.chatopback.payload.api.ApiResponse apiResponse = new com.chatop.chatopback.payload.api.ApiResponse("Rental created!");
         try {
             Rental rental = modelMapper.map(rentalDto, Rental.class);
             Timestamp now = Timestamp.from(Instant.now());
+            rental.setPicture(rentalDto.getPicture().getOriginalFilename());
             rental.setCreatedAt(now);
             rental.setUpdatedAt(now);
 
