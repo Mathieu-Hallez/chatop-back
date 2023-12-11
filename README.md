@@ -79,7 +79,7 @@ source ./generate_database.sql;
 
 ---
 
-## Generate a Private Key (RSA):
+## Generate a Private Key (RSA)
 
 In the `src/main/resources/certs` directory open a terminal and execute:
 ````shell
