@@ -17,6 +17,7 @@ later, throughout France.
 - [MySQL Database](#MySQL Database)
 - [Generate a Private Key (RSA)](#Generate-a-Private-Key-(RSA):)
 - [Project Structure](#Project structure)
+- [Documentations](#Documentations)
 
 ---
 ## Quick Start
@@ -105,6 +106,14 @@ openssl pkcs8 -topk8 -inform PEM -outform PEM -in private-key.pem -out private-k
 | Service    | Processing of received data.      |
 | Repository | Database request access.          |
 | Payload    | Data to object (DTO).             |
+
+---
+
+## Documentations
+
+- [Swagger](http://localhost:3001/swagger-ui.html) : http://localhost:3001/swagger-ui.html
+- [OpenAPI](http://localhost:3001/api-docs) : http://localhost:3001/api-docs
+---
 
 ## Contribute to the project
 ChâTop is an open source project.
