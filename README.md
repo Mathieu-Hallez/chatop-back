@@ -13,10 +13,10 @@ later, throughout France.
 
 ## Index
 
-- [Quick Start](#Quick Start)
-- [MySQL Database](#MySQL Database)
+- [Quick Start](#Quick-Start)
+- [MySQL Database](#MySQL-Database)
 - [Generate a Private Key (RSA)](#Generate-a-Private-Key-(RSA):)
-- [Project Structure](#Project structure)
+- [Project Structure](#Project-structure)
 - [Documentations](#Documentations)
 
 ---
