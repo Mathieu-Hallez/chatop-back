@@ -15,7 +15,7 @@ later, throughout France.
 
 - [Quick Start](#Quick-Start)
 - [MySQL Database](#MySQL-Database)
-- [Generate a Private Key (RSA)](#Generate-a-Private-Key-(RSA):)
+- [Generate a Private Key (RSA)](#Generate-a-Private-Key-(RSA))
 - [Project Structure](#Project-structure)
 - [Documentations](#Documentations)
 
