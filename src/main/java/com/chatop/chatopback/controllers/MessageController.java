@@ -46,7 +46,7 @@ public class MessageController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Rental or User not found in DB.", content = { @Content(mediaType = "application/json", schema = @Schema())})
             }
     )
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ApiResponse> postMessage(@RequestBody @NotNull MessageRequestDto messageRequestDto) {
         ApiResponse apiResponse = new ApiResponse("Message send with success");
 

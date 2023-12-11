@@ -28,6 +28,7 @@ public class UserService {
      * @return Optional DBUser
      */
     public Optional<DBUser> registerUser(DBUser user) {
+        // Test unique user in DB
         Optional<DBUser> userOptional = this.userRepository.findUserByEmail(user.getEmail());
         if(userOptional.isPresent()) {
             return Optional.empty();

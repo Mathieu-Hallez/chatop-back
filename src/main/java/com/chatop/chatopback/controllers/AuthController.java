@@ -69,7 +69,7 @@ public class AuthController {
         Optional<DBUser> dbUser = this.userService.getUser(authentication.getName());
         if(dbUser.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(modelMapper.map(dbUser.get(), UserDto.class), HttpStatus.FOUND);
+        return new ResponseEntity<>(modelMapper.map(dbUser.get(), UserDto.class), HttpStatus.OK);
     }
 
     /**
@@ -89,13 +89,13 @@ public class AuthController {
     @PostMapping("/login")
     @SecurityRequirements()
     public ResponseEntity<?> getToken(@RequestBody LoginRequestDto userLogin) throws IllegalAccessException {
-        Optional<DBUser> optionalDbUser = this.userService.getUser(userLogin.getLogin());
+        Optional<DBUser> optionalDbUser = this.userService.getUser(userLogin.getEmail());
         if(optionalDbUser.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse("Unknown user login."), HttpStatus.UNAUTHORIZED);
         }
 
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getLogin(), userLogin.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             User user = (User) authentication.getPrincipal();
 
@@ -144,6 +144,6 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(authentication);
 
-        return new ResponseEntity<TokenDto>(new TokenDto(token), HttpStatus.CREATED);
+        return new ResponseEntity<TokenDto>(new TokenDto(token), HttpStatus.OK);
     }
 }
