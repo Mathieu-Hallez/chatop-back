@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 public class UserDto {
+
+    private static final String PATTERN_FORMAT = "yyyy/MM/dd";
+
     private Long id;
     private String name;
     private String email;
@@ -21,12 +24,10 @@ public class UserDto {
     private String updatedAt;
 
     public void setCreatedAt(String date) {
-        String PATTERN_FORMAT = "yyyy/MM/dd";
         this.createdAt = DateTimeFormatter.ofPattern(PATTERN_FORMAT).withZone( ZoneId.systemDefault() ).format(Timestamp.valueOf(date).toLocalDateTime());
     }
 
     public void setUpdatedAt(String date) {
-        String PATTERN_FORMAT = "yyyy/MM/dd";
         this.updatedAt = DateTimeFormatter.ofPattern(PATTERN_FORMAT).withZone( ZoneId.systemDefault() ).format(Timestamp.valueOf(date).toLocalDateTime());
     }
 

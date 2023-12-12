@@ -9,11 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends CrudRepository<DBUser, Long> {
-
     Optional<DBUser> findUserByEmail(
             @Param("email") String email
     );
-
-    @Override
     Optional<DBUser> findById(Long aLong);
 }
